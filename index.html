@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AnimeAI Studio</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+    body { background: #0f1016; color: #f1f1f5; display: flex; justify-content: center; min-height: 100vh; padding: 16px; }
+    .container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 16px; }
+    header { text-align: center; margin-bottom: 8px; }
+    header h1 { font-size: 22px; color: #ff5e97; }
+    header p { font-size: 13px; color: #8a8d9b; margin-top: 4px; }
+    .nav-tabs { display: flex; background: #1a1c26; border-radius: 12px; padding: 4px; gap: 4px; }
+    .tab-btn { flex: 1; padding: 10px 6px; border: none; background: transparent; color: #8a8d9b; font-size: 12px; font-weight: 600; border-radius: 8px; cursor: pointer; }
+    .tab-btn.active { background: #ff5e97; color: #fff; }
+    .panel { display: none; background: #171822; border-radius: 16px; padding: 20px; border: 1px solid #282a3a; flex-direction: column; gap: 14px; }
+    .panel.active { display: flex; }
+    label { font-size: 13px; font-weight: 600; color: #cfd2e0; }
+    textarea, input[type="file"] { width: 100%; background: #202230; border: 1px solid #32354a; color: #fff; border-radius: 10px; padding: 10px; font-size: 13px; }
+    textarea { resize: none; height: 80px; }
+    .action-btn { background: linear-gradient(135deg, #ff5e97, #8e44ad); color: white; border: none; padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .preview-box { background: #12131b; border: 1px solid #232533; border-radius: 12px; padding: 14px; text-align: center; min-height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .preview-box video { width: 100%; border-radius: 8px; display: none; }
+    .status-text { font-size: 12px; color: #73778a; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Anime AI Studio</h1>
+    <p>Realistic Anime Movie Generator</p>
+  </header>
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="showTab(0)">Text to Video</button>
+    <button class="tab-btn" onclick="showTab(1)">Image to Video</button>
+    <button class="tab-btn" onclick="showTab(2)">Lip-Sync Audio</button>
+  </div>
+  <div class="panel active" id="tab-0">
+    <label>Describe your Anime Scene:</label>
+    <textarea id="promptInput" placeholder="A samurai under cherry blossoms..."></textarea>
+    <button class="action-btn" onclick="simulate('status-0', 'Text-to-Video')">Generate Anime Video</button>
+    <div class="preview-box">
+      <p class="status-text" id="status-0">Rendered video will appear here.</p>
+    </div>
+  </div>
+  <div class="panel" id="tab-1">
+    <label>Upload Anime Image:</label>
+    <input type="file" accept="image/*" />
+    <label>Motion Description:</label>
+    <textarea placeholder="Hair blowing in wind, slow zoom..."></textarea>
+    <button class="action-btn" onclick="simulate('status-1', 'Image-to-Video')">Animate Image</button>
+    <div class="preview-box">
+      <p class="status-text" id="status-1">Motion video output will appear here.</p>
+    </div>
+  </div>
+  <div class="panel" id="tab-2">
+    <label>1. Upload Anime Face:</label>
+    <input type="file" accept="image/*" />
+    <label>2. Upload Audio File:</label>
+    <input type="file" accept="audio/*" />
+    <button class="action-btn" onclick="simulate('status-2', 'Lip-Sync Animation')">Sync Voice & Animate Face</button>
+    <div class="preview-box">
+      <p class="status-text" id="status-2">Lip-sync talking video will appear here.</p>
+    </div>
+  </div>
+</div>
+<script>
+  function showTab(idx) {
+    document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+    document.querySelectorAll('.panel').forEach((p, i) => p.classList.toggle('active', i === idx));
+  }
+  function simulate(id, name) {
+    document.getElementById(id).innerText = "⏳ Processing " + name + "... Connecting to AI node...";
+  }
+</script>
+</body>
+</html>
