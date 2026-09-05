@@ -1,78 +1,141 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AnimeAI Studio</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JARVIS Full Anime Movie Studio</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-    body { background: #0f1016; color: #f1f1f5; display: flex; justify-content: center; min-height: 100vh; padding: 16px; }
-    .container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 16px; }
-    header { text-align: center; margin-bottom: 8px; }
-    header h1 { font-size: 22px; color: #ff5e97; }
-    header p { font-size: 13px; color: #8a8d9b; margin-top: 4px; }
-    .nav-tabs { display: flex; background: #1a1c26; border-radius: 12px; padding: 4px; gap: 4px; }
-    .tab-btn { flex: 1; padding: 10px 6px; border: none; background: transparent; color: #8a8d9b; font-size: 12px; font-weight: 600; border-radius: 8px; cursor: pointer; }
-    .tab-btn.active { background: #ff5e97; color: #fff; }
-    .panel { display: none; background: #171822; border-radius: 16px; padding: 20px; border: 1px solid #282a3a; flex-direction: column; gap: 14px; }
-    .panel.active { display: flex; }
-    label { font-size: 13px; font-weight: 600; color: #cfd2e0; }
-    textarea, input[type="file"] { width: 100%; background: #202230; border: 1px solid #32354a; color: #fff; border-radius: 10px; padding: 10px; font-size: 13px; }
-    textarea { resize: none; height: 80px; }
-    .action-btn { background: linear-gradient(135deg, #ff5e97, #8e44ad); color: white; border: none; padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; }
-    .preview-box { background: #12131b; border: 1px solid #232533; border-radius: 12px; padding: 14px; text-align: center; min-height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .preview-box video { width: 100%; border-radius: 8px; display: none; }
-    .status-text { font-size: 12px; color: #73778a; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background: #070a13; color: #f8fafc; padding: 14px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+    .studio-box { width: 100%; max-width: 500px; background: #111827; border: 1px solid #1f2937; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    h1 { font-size: 18px; color: #38bdf8; text-align: center; }
+    textarea { width: 100%; height: 80px; background: #0b0f19; border: 1px solid #374151; border-radius: 8px; color: #fff; padding: 10px; font-size: 13px; resize: none; }
+    .btn { background: linear-gradient(135deg, #0284c7, #2563eb); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    .btn:disabled { opacity: 0.6; }
+    #status { font-size: 12px; color: #38bdf8; text-align: center; min-height: 16px; }
+    .canvas-wrapper { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 10px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }
+    canvas { width: 100%; height: 100%; object-fit: contain; }
+    .dl-btn { background: #16a34a; color: white; padding: 10px; border-radius: 8px; text-decoration: none; font-weight: bold; text-align: center; display: none; }
   </style>
 </head>
 <body>
-<div class="container">
-  <header>
-    <h1>Anime AI Studio</h1>
-    <p>Realistic Anime Movie Generator</p>
-  </header>
-  <div class="nav-tabs">
-    <button class="tab-btn active" onclick="showTab(0)">Text to Video</button>
-    <button class="tab-btn" onclick="showTab(1)">Image to Video</button>
-    <button class="tab-btn" onclick="showTab(2)">Lip-Sync Audio</button>
-  </div>
-  <div class="panel active" id="tab-0">
-    <label>Describe your Anime Scene:</label>
-    <textarea id="promptInput" placeholder="A samurai under cherry blossoms..."></textarea>
-    <button class="action-btn" onclick="simulate('status-0', 'Text-to-Video')">Generate Anime Video</button>
-    <div class="preview-box">
-      <p class="status-text" id="status-0">Rendered video will appear here.</p>
+
+  <div class="studio-box">
+    <h1>🎬 JARVIS Multi-Scene Anime Studio</h1>
+    <textarea id="storyInput" placeholder="Apni kahani boliye ya likhein (jaise: Jungle me do yoddha anime aamne-samne aaye aur ek tufan utha...)"></textarea>
+    
+    <button class="btn" id="startBtn" onclick="buildFullMovie()">🚀 Jarvis, Generate Full Movie</button>
+    <div id="status">Kahani likhkar button dabayein</div>
+
+    <div class="canvas-wrapper">
+      <canvas id="movieCanvas" width="1280" height="720"></canvas>
     </div>
+
+    <a id="downloadMovieBtn" class="dl-btn" download="anime_movie.webm">📥 Download Full Anime Movie</a>
   </div>
-  <div class="panel" id="tab-1">
-    <label>Upload Anime Image:</label>
-    <input type="file" accept="image/*" />
-    <label>Motion Description:</label>
-    <textarea placeholder="Hair blowing in wind, slow zoom..."></textarea>
-    <button class="action-btn" onclick="simulate('status-1', 'Image-to-Video')">Animate Image</button>
-    <div class="preview-box">
-      <p class="status-text" id="status-1">Motion video output will appear here.</p>
-    </div>
-  </div>
-  <div class="panel" id="tab-2">
-    <label>1. Upload Anime Face:</label>
-    <input type="file" accept="image/*" />
-    <label>2. Upload Audio File:</label>
-    <input type="file" accept="audio/*" />
-    <button class="action-btn" onclick="simulate('status-2', 'Lip-Sync Animation')">Sync Voice & Animate Face</button>
-    <div class="preview-box">
-      <p class="status-text" id="status-2">Lip-sync talking video will appear here.</p>
-    </div>
-  </div>
-</div>
-<script>
-  function showTab(idx) {
-    document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
-    document.querySelectorAll('.panel').forEach((p, i) => p.classList.toggle('active', i === idx));
-  }
-  function simulate(id, name) {
-    document.getElementById(id).innerText = "⏳ Processing " + name + "... Connecting to AI node...";
-  }
-</script>
+
+  <script>
+    const canvas = document.getElementById('movieCanvas');
+    const ctx = canvas.getContext('2d');
+    const status = document.getElementById('status');
+    const dlBtn = document.getElementById('downloadMovieBtn');
+    const startBtn = document.getElementById('startBtn');
+
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#64748b';
+    ctx.font = '32px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Movie Preview Yahan Aayegi', canvas.width/2, canvas.height/2);
+
+    async function buildFullMovie() {
+      const text = document.getElementById('storyInput').value.trim();
+      if (!text) { alert('Pehle kahani likhein!'); return; }
+
+      startBtn.disabled = true;
+      dlBtn.style.display = 'none';
+
+      const scenes = [
+        { prompt: `cinematic anime opening wide scene, Makoto Shinkai style, ${text}`, sub: `${text} - Safar shuru hua.` },
+        { prompt: `intense anime action dramatic angle, high quality, ${text}`, sub: "Raste me ek anjaan takat samne aayi." },
+        { prompt: `epic climax anime victory sunset glow, ${text}`, sub: "Aur aakhirkar, kahani ek naye mod par pahunchi." }
+      ];
+
+      status.innerText = "Step 1/3: AI Cloud se saare Anime Scenes ban rahe hain...";
+      const images = [];
+      for (let i = 0; i < scenes.length; i++) {
+        const seed = Math.floor(Math.random() * 99999);
+        const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(scenes[i].prompt)}?seed=${seed}&width=1280&height=720&nologo=true`;
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        await new Promise(resolve => {
+          img.onload = resolve;
+          img.onerror = resolve;
+          img.src = url;
+        });
+        images.push(img);
+      }
+
+      const stream = canvas.captureStream(25);
+      const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+      const chunks = [];
+      recorder.ondataavailable = e => chunks.push(e.data);
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'video/webm' });
+        dlBtn.href = URL.createObjectURL(blob);
+        dlBtn.style.display = 'block';
+        status.innerText = "✅ Jarvis: 'Puri Movie taiyar hai, download karein!'";
+        startBtn.disabled = false;
+      };
+
+      recorder.start();
+
+      for (let i = 0; i < scenes.length; i++) {
+        status.innerText = `Step 2/3: Scene ${i+1}/${scenes.length} chal raha hai...`;
+        await playScene(images[i], scenes[i].sub);
+      }
+
+      recorder.stop();
+    }
+
+    function playScene(img, subtitle) {
+      return new Promise(resolve => {
+        let frame = 0;
+        const totalFrames = 120;
+
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const utt = new SpeechSynthesisUtterance(subtitle);
+          utt.lang = 'hi-IN';
+          window.speechSynthesis.speak(utt);
+        }
+
+        const interval = setInterval(() => {
+          frame++;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          
+          const scale = 1 + (frame / totalFrames) * 0.05;
+          const w = canvas.width * scale;
+          const h = canvas.height * scale;
+          const x = (canvas.width - w) / 2;
+          const y = (canvas.height - h) / 2;
+
+          ctx.drawImage(img, x, y, w, h);
+
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+          ctx.fillRect(40, canvas.height - 110, canvas.width - 80, 70);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 30px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(subtitle, canvas.width / 2, canvas.height - 65);
+
+          if (frame >= totalFrames) {
+            clearInterval(interval);
+            resolve();
+          }
+        }, 1000 / 25);
+      });
+    }
+  </script>
 </body>
 </html>
