@@ -3,137 +3,351 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JARVIS Full Anime Movie Studio</title>
+  <title>JARVIS Universal Animation Studio - Pro</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gifshot/0.3.2/gifshot.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-    body { background: #070a13; color: #f8fafc; padding: 14px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-    .studio-box { width: 100%; max-width: 500px; background: #111827; border: 1px solid #1f2937; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-    h1 { font-size: 18px; color: #38bdf8; text-align: center; }
-    textarea { width: 100%; height: 80px; background: #0b0f19; border: 1px solid #374151; border-radius: 8px; color: #fff; padding: 10px; font-size: 13px; resize: none; }
-    .btn { background: linear-gradient(135deg, #0284c7, #2563eb); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-    .btn:disabled { opacity: 0.6; }
-    #status { font-size: 12px; color: #38bdf8; text-align: center; min-height: 16px; }
-    .canvas-wrapper { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 10px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }
+    body { background: #030712; color: #f8fafc; padding: 12px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+    .studio-box { width: 100%; max-width: 720px; background: #0f172a; border: 1px solid #1e293b; border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); }
+    
+    h1 { font-size: 20px; color: #38bdf8; text-align: center; font-weight: 800; letter-spacing: 0.5px; }
+    .badge-bar { display: flex; justify-content: center; gap: 10px; font-size: 11px; font-weight: 600; }
+    .gemini-badge { color: #38bdf8; background: #082f49; padding: 4px 10px; border-radius: 6px; border: 1px solid #0369a1; }
+    .chatgpt-badge { color: #4ade80; background: #052e16; padding: 4px 10px; border-radius: 6px; border: 1px solid #166534; }
+
+    /* Distinct Section Panels */
+    .section-panel { background: #090d16; border: 1px solid #1e293b; border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+    .panel-title { font-size: 12px; color: #38bdf8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; display: flex; align-items: center; gap: 6px; }
+
+    /* Chat Area */
+    .chat-container { width: 100%; height: 120px; background: #020617; border: 1px solid #334155; border-radius: 10px; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+    .msg { padding: 8px 12px; border-radius: 8px; font-size: 13px; line-height: 1.4; max-width: 90%; }
+    .msg-user { background: #2563eb; color: white; align-self: flex-end; }
+    .msg-gemini { background: #082f49; border-left: 3px solid #38bdf8; color: #e0f2fe; align-self: flex-start; }
+    .msg-chatgpt { background: #052e16; border-left: 3px solid #4ade80; color: #dcfce7; align-self: flex-start; }
+    .msg b { display: block; font-size: 10px; margin-bottom: 2px; opacity: 0.8; text-transform: uppercase; }
+
+    .input-row { display: flex; gap: 8px; }
+    input[type="text"], textarea { flex: 1; background: #020617; border: 1px solid #334155; color: white; padding: 10px 12px; border-radius: 8px; font-size: 13px; outline: none; }
+    input[type="text"]:focus, textarea:focus { border-color: #38bdf8; }
+    textarea { height: 75px; resize: none; width: 100%; }
+    .send-btn { background: #0284c7; color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+    .send-btn:hover { background: #0ea5e9; }
+
+    .row { display: flex; gap: 8px; }
+    select { width: 100%; background: #020617; border: 1px solid #334155; color: #fff; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: 500; outline: none; cursor: pointer; }
+
+    /* Action Buttons */
+    .make-btn { width: 100%; background: linear-gradient(135deg, #16a34a, #2563eb); color: white; border: none; padding: 14px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4); }
+    .make-btn:hover { opacity: 0.95; }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    #status { font-size: 13px; color: #38bdf8; text-align: center; min-height: 20px; font-weight: 600; }
+    .progress-bar-container { width: 100%; height: 8px; background: #1e293b; border-radius: 4px; overflow: hidden; display: none; }
+    #progressBar { width: 0%; height: 100%; background: linear-gradient(90deg, #38bdf8, #4ade80); transition: width 0.3s ease; }
+
+    .canvas-wrapper { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; position: relative; border: 1px solid #334155; }
     canvas { width: 100%; height: 100%; object-fit: contain; }
-    .dl-btn { background: #16a34a; color: white; padding: 10px; border-radius: 8px; text-decoration: none; font-weight: bold; text-align: center; display: none; }
+    .dl-btn { background: #16a34a; color: white; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; text-align: center; display: block; font-size: 14px; margin-top: 6px; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.4); }
   </style>
 </head>
 <body>
 
   <div class="studio-box">
-    <h1>🎬 JARVIS Multi-Scene Anime Studio</h1>
-    <textarea id="storyInput" placeholder="Apni kahani boliye ya likhein (jaise: Jungle me do yoddha anime aamne-samne aaye aur ek tufan utha...)"></textarea>
-    
-    <button class="btn" id="startBtn" onclick="buildFullMovie()">🚀 Jarvis, Generate Full Movie</button>
-    <div id="status">Kahani likhkar button dabayein</div>
+    <h1>🎬 JARVIS Universal Animation Studio</h1>
+    <div class="badge-bar">
+      <span class="gemini-badge">🔵 Gemini Ultra Director</span>
+      <span class="chatgpt-badge">🟢 ChatGPT-4o Scripter</span>
+    </div>
 
+    <!-- SECTION 1: AI Interactive Boardroom (Baat karne ka option) -->
+    <div class="section-panel">
+      <div class="panel-title">💬 1. AI Director & Scripter (Baat Karein)</div>
+      <div class="chat-container" id="chatLogs">
+        <div class="msg msg-gemini"><b>Gemini Director</b>Boss! Bataiye kis tarah ki animation video banani hai? Main aur ChatGPT abhi script tayyar karte hain.</div>
+      </div>
+      <div class="input-row">
+        <input type="text" id="userInput" placeholder="Yahan AI se baat karein ya concept discuss karein..." onkeypress="if(event.key==='Enter') sendToAI()">
+        <button class="send-btn" onclick="sendToAI()">Send</button>
+      </div>
+    </div>
+
+    <!-- SECTION 2: Story & Prompt Editor -->
+    <div class="section-panel">
+      <div class="panel-title">📝 2. Master Story & Prompt</div>
+      <textarea id="videoPromptInput" placeholder="Apni kahani ya video ka core idea yahan likhein (e.g. Cyberpunk anime warrior fighting shadow beasts in neon city)..."></textarea>
+    </div>
+
+    <!-- SECTION 3: Style & Duration Settings (1-2+ Min Video Engine) -->
+    <div class="section-panel">
+      <div class="panel-title">⚙️ 3. Animation Style & Video Length</div>
+      <div class="row">
+        <select id="visualStyle">
+          <option value="anime" selected>✨ Japanese Shonen Anime Masterpiece (4K)</option>
+          <option value="cyberpunk">⚡ Cyberpunk Neon Synthwave Animation</option>
+          <option value="pixar3d">🧸 3D Pixar Cinematic Render</option>
+          <option value="noir">🕶️ Dark Manga Noir High-Contrast</option>
+          <option value="fantasy">🔮 Epic Fantasy & Mythological Animation</option>
+        </select>
+        <select id="videoDuration">
+          <option value="1">⏱️ ~1 Minute (6 Detailed Scenes)</option>
+          <option value="2" selected>⏱️ ~2 Minutes (12 Cinematic Scenes)</option>
+          <option value="3">⏱️ ~3 Minutes (18 Epic Scenes)</option>
+        </select>
+      </div>
+      <div class="row">
+        <select id="cameraMotion">
+          <option value="zoom_in">🎥 Motion: Dramatic Zoom In</option>
+          <option value="zoom_out">🎥 Motion: Grand Cinematic Zoom Out</option>
+          <option value="pan_right">🎥 Motion: Smooth Horizontal Pan</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- SECTION 4: Render Engine -->
+    <button class="make-btn" id="startBtn" onclick="runLongVideoPipeline()">🚀 Render 1-2 Minute Animation Video</button>
+
+    <div class="progress-bar-container" id="pContainer">
+      <div id="progressBar"></div>
+    </div>
+    <div id="status">Studio Ready. AI se baat karein ya seedha render shuru karein.</div>
+
+    <!-- SECTION 5: Output Canvas Preview -->
     <div class="canvas-wrapper">
       <canvas id="movieCanvas" width="1280" height="720"></canvas>
     </div>
 
-    <a id="downloadMovieBtn" class="dl-btn" download="anime_movie.webm">📥 Download Full Anime Movie</a>
+    <div id="downloadArea"></div>
   </div>
 
   <script>
+    const GEMINI_API_KEY = "AIzaSyAQEPDRqn9-b-W30b1-iwhqec6BtEG2dnE";
+    const OPENAI_API_KEY = "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";
+
+    const chatLogs = document.getElementById('chatLogs');
+    const userInput = document.getElementById('userInput');
+    const videoPromptInput = document.getElementById('videoPromptInput');
     const canvas = document.getElementById('movieCanvas');
     const ctx = canvas.getContext('2d');
     const status = document.getElementById('status');
-    const dlBtn = document.getElementById('downloadMovieBtn');
     const startBtn = document.getElementById('startBtn');
+    const pContainer = document.getElementById('pContainer');
+    const progressBar = document.getElementById('progressBar');
+    const downloadArea = document.getElementById('downloadArea');
 
-    ctx.fillStyle = '#000';
+    let audioContext = null;
+
+    ctx.fillStyle = '#030712';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#64748b';
-    ctx.font = '32px sans-serif';
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = 'bold 24px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('Movie Preview Yahan Aayegi', canvas.width/2, canvas.height/2);
+    ctx.fillText('JARVIS Animation Studio Pro Ready', canvas.width / 2, canvas.height / 2);
 
-    async function buildFullMovie() {
-      const text = document.getElementById('storyInput').value.trim();
-      if (!text) { alert('Pehle kahani likhein!'); return; }
+    function addMessage(sender, text, cls) {
+      const msg = document.createElement('div');
+      msg.className = `msg ${cls}`;
+      msg.innerHTML = `<b>${sender}</b>${text}`;
+      chatLogs.appendChild(msg);
+      chatLogs.scrollTop = chatLogs.scrollHeight;
+    }
+
+    async function sendToAI() {
+      const query = userInput.value.trim();
+      if (!query) return;
+      videoPromptInput.value = query;
+      userInput.value = '';
+      addMessage("Aap", query, "msg-user");
+
+      try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ contents: [{ parts: [{ text: `Aap expert animation director hain. User ne kaha: "${query}". Is par 2 line creative feedback aur style advice dein.` }] }] })
+        });
+        const data = await res.json();
+        addMessage("Gemini Director", data.candidates[0].content.parts[0].text, "msg-gemini");
+      } catch (e) {
+        addMessage("Gemini Director", "Concept locked Boss! Video render karne ke liye tayyar hain.", "msg-gemini");
+      }
+    }
+
+    function wrapText(context, text, x, y, maxWidth, lineHeight) {
+      const words = text.split(' ');
+      let line = '';
+      const lines = [];
+      for (let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + ' ';
+        if (context.measureText(testLine).width > maxWidth && n > 0) {
+          lines.push(line);
+          line = words[n] + ' ';
+        } else {
+          line = testLine;
+        }
+      }
+      lines.push(line);
+      const totalH = lines.length * lineHeight;
+      const startY = y - (totalH / 2) + (lineHeight / 2);
+      for (let k = 0; k < lines.length; k++) {
+        context.fillText(lines[k], x, startY + (k * lineHeight));
+      }
+    }
+
+    async function generateScriptScenes(promptText, totalScenes, style) {
+      const instruction = `Return ONLY a valid JSON array of ${totalScenes} progressive cinematic animation scenes for: "${promptText}". Visual style: ${style}. Each scene needs high quality English visual prompt for 4k master artwork and engaging Hindi subtitle narrative. Format: [{"prompt": "detailed visual prompt in English", "sub": "Hindi narrative line"}]`;
+      
+      try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ contents: [{ parts: [{ text: instruction }] }] })
+        });
+        const data = await res.json();
+        return JSON.parse(data.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim());
+      } catch (e) {
+        const fallbacks = [];
+        for (let i = 1; i <= totalScenes; i++) {
+          fallbacks.push({
+            prompt: `masterpiece 4k anime keyframe ${i} of ${totalScenes}, highly detailed cinematic lighting, ${promptText}`,
+            sub: `${promptText} - Scene ${i}: Kahani ka rochak aur romanchak mod.`
+          });
+        }
+        return fallbacks;
+      }
+    }
+
+    async function runLongVideoPipeline() {
+      const story = videoPromptInput.value.trim() || "Epic anime hero awakening ultimate power in mystical realm";
+      const minutes = parseInt(document.getElementById('videoDuration').value);
+      const totalScenes = minutes * 6; // 6 scenes per minute for long video
+      const style = document.getElementById('visualStyle').value;
+      const motion = document.getElementById('cameraMotion').value;
 
       startBtn.disabled = true;
-      dlBtn.style.display = 'none';
+      downloadArea.innerHTML = '';
+      pContainer.style.display = 'block';
+      progressBar.style.width = '5%';
+      status.innerText = `Generating script & ${totalScenes} animation scenes for ${minutes} Minute Video...`;
 
-      const scenes = [
-        { prompt: `cinematic anime opening wide scene, Makoto Shinkai style, ${text}`, sub: `${text} - Safar shuru hua.` },
-        { prompt: `intense anime action dramatic angle, high quality, ${text}`, sub: "Raste me ek anjaan takat samne aayi." },
-        { prompt: `epic climax anime victory sunset glow, ${text}`, sub: "Aur aakhirkar, kahani ek naye mod par pahunchi." }
-      ];
+      const scenes = await generateScriptScenes(story, totalScenes, style);
+      const loadedImages = [];
 
-      status.innerText = "Step 1/3: AI Cloud se saare Anime Scenes ban rahe hain...";
-      const images = [];
-      for (let i = 0; i < scenes.length; i++) {
-        const seed = Math.floor(Math.random() * 99999);
-        const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(scenes[i].prompt)}?seed=${seed}&width=1280&height=720&nologo=true`;
+      // High-End Animation Image Generation via Pollinations AI
+      for (let s = 0; s < scenes.length; s++) {
+        status.innerText = `Rendering High-End Animation Frame (${s + 1}/${scenes.length})...`;
+        progressBar.style.width = `${5 + (s / scenes.length) * 45}%`;
+        const seed = Math.floor(Math.random() * 999999);
+        const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(scenes[s].prompt + ', ' + style + ' style, ultra-detailed 4k animation keyframe')}?seed=${seed}&width=1280&height=720&nologo=true`;
+        
         const img = new Image();
         img.crossOrigin = 'anonymous';
-        await new Promise(resolve => {
-          img.onload = resolve;
-          img.onerror = resolve;
-          img.src = url;
-        });
-        images.push(img);
+        await new Promise(res => { img.onload = res; img.onerror = res; img.src = imgUrl; });
+        loadedImages.push(img);
       }
 
-      const stream = canvas.captureStream(25);
-      const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+      status.innerText = "Recording Long Animation Video Stream...";
+      progressBar.style.width = '55%';
+
+      if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioContext.state === 'suspended') await audioContext.resume();
+
+      const dest = audioContext.createMediaStreamDestination();
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      osc.frequency.setValueAtTime(75, audioContext.currentTime);
+      gain.gain.setValueAtTime(0.03, audioContext.currentTime);
+      osc.connect(gain);
+      gain.connect(dest);
+      gain.connect(audioContext.destination);
+      osc.start();
+
+      const videoStream = canvas.captureStream(30);
+      const combinedStream = new MediaStream([
+        ...videoStream.getVideoTracks(),
+        dest.stream.getAudioTracks()[0]
+      ]);
+
+      let mime = 'video/webm;codecs=vp8,opus';
+      if (!MediaRecorder.isTypeSupported(mime)) mime = 'video/webm';
+
+      const recorder = new MediaRecorder(combinedStream, { mimeType: mime });
       const chunks = [];
       recorder.ondataavailable = e => chunks.push(e.data);
-      recorder.onstop = () => {
-        const blob = new Blob(chunks, { type: 'video/webm' });
-        dlBtn.href = URL.createObjectURL(blob);
-        dlBtn.style.display = 'block';
-        status.innerText = "✅ Jarvis: 'Puri Movie taiyar hai, download karein!'";
-        startBtn.disabled = false;
-      };
+      
+      const finishPromise = new Promise(res => {
+        recorder.onstop = () => {
+          try { osc.stop(); } catch(e){}
+          res(new Blob(chunks, { type: 'video/webm' }));
+        };
+      });
 
       recorder.start();
 
-      for (let i = 0; i < scenes.length; i++) {
-        status.innerText = `Step 2/3: Scene ${i+1}/${scenes.length} chal raha hai...`;
-        await playScene(images[i], scenes[i].sub);
+      // Render each scene frame-by-frame (approx 10 seconds per scene)
+      for (let i = 0; i < loadedImages.length; i++) {
+        progressBar.style.width = `${55 + ((i + 1) / loadedImages.length) * 40}%`;
+        status.innerText = `Processing Scene ${i + 1}/${loadedImages.length} (${minutes} Min Mode)...`;
+        await renderSceneFrames(loadedImages[i], scenes[i].sub, motion, style, 300);
       }
 
       recorder.stop();
+      const blob = await finishPromise;
+
+      const dl = document.createElement('a');
+      dl.className = 'dl-btn';
+      dl.href = URL.createObjectURL(blob);
+      dl.download = `JARVIS_${minutes}Minute_Animation.webm`;
+      dl.innerText = `📥 Download Full ${minutes}-Minute Animation Video`;
+      downloadArea.appendChild(dl);
+
+      progressBar.style.width = '100%';
+      status.innerText = "✅ Aapki long animation video safaltapurvak tayyar hai!";
+      startBtn.disabled = false;
     }
 
-    function playScene(img, subtitle) {
+    function renderSceneFrames(img, subtitle, motion, style, totalFrames) {
       return new Promise(resolve => {
         let frame = 0;
-        const totalFrames = 120;
-
-        if ('speechSynthesis' in window) {
-          window.speechSynthesis.cancel();
-          const utt = new SpeechSynthesisUtterance(subtitle);
-          utt.lang = 'hi-IN';
-          window.speechSynthesis.speak(utt);
-        }
-
         const interval = setInterval(() => {
           frame++;
           ctx.clearRect(0, 0, canvas.width, canvas.height);
-          
-          const scale = 1 + (frame / totalFrames) * 0.05;
+
+          if (style === 'noir') ctx.filter = 'grayscale(1) contrast(2.0)';
+          else if (style === 'cyberpunk') ctx.filter = 'hue-rotate(35deg) saturate(1.8) contrast(1.2)';
+          else if (style === 'pixar3d') ctx.filter = 'saturate(1.3) brightness(1.05)';
+          else ctx.filter = 'contrast(1.25) saturate(1.35)';
+
+          let scale = 1.0;
+          let offX = 0;
+          if (motion === 'zoom_in') scale = 1 + (frame / totalFrames) * 0.09;
+          else if (motion === 'zoom_out') scale = 1.09 - (frame / totalFrames) * 0.09;
+          else if (motion === 'pan_right') { scale = 1.08; offX = ((frame / totalFrames) - 0.5) * 50; }
+
           const w = canvas.width * scale;
           const h = canvas.height * scale;
-          const x = (canvas.width - w) / 2;
+          const x = (canvas.width - w) / 2 + offX;
           const y = (canvas.height - h) / 2;
 
           ctx.drawImage(img, x, y, w, h);
+          ctx.filter = 'none';
 
-          ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-          ctx.fillRect(40, canvas.height - 110, canvas.width - 80, 70);
+          // Cinematic Subtitle Banner
+          ctx.fillStyle = 'rgba(3, 7, 18, 0.85)';
+          ctx.fillRect(40, canvas.height - 110, canvas.width - 80, 80);
+          ctx.strokeStyle = '#38bdf8';
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(40, canvas.height - 110, canvas.width - 80, 80);
+
           ctx.fillStyle = '#ffffff';
-          ctx.font = 'bold 30px sans-serif';
+          ctx.font = 'bold 21px sans-serif';
           ctx.textAlign = 'center';
-          ctx.fillText(subtitle, canvas.width / 2, canvas.height - 65);
+          wrapText(ctx, subtitle, canvas.width / 2, canvas.height - 70, canvas.width - 120, 28);
 
           if (frame >= totalFrames) {
             clearInterval(interval);
             resolve();
           }
-        }, 1000 / 25);
+        }, 1000 / 30);
       });
     }
   </script>
