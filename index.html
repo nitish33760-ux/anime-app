@@ -1,816 +1,722 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>JARVIS Universal Animation Studio</title>
-
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,sans-serif}
-body{background:#020617;color:#f8fafc;padding:8px;min-height:100vh}
-.app{max-width:1200px;margin:auto;background:#07101d;border:1px solid #1e293b;border-radius:18px;overflow:hidden}
-header{padding:15px;border-bottom:1px solid #243247;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.brand{font-size:20px;font-weight:900;color:#38bdf8}
-.brand small{display:block;font-size:9px;color:#94a3b8}
-.badges{display:flex;gap:5px;flex-wrap:wrap}
-.badge{padding:5px 8px;border-radius:6px;font-size:9px;font-weight:800}
-.blue{background:#082f49;color:#7dd3fc}
-.green{background:#052e16;color:#86efac}
-.gray{background:#172033;color:#cbd5e1}
-
-.workspace{display:grid;grid-template-columns:1.7fr .9fr;gap:10px;padding:10px}
-.left,.right{display:flex;flex-direction:column;gap:10px}
-.panel{background:#0b1220;border:1px solid #243247;border-radius:11px;padding:10px}
-.title{font-size:11px;font-weight:900;color:#94a3b8;text-transform:uppercase;margin-bottom:8px;display:flex;justify-content:space-between}
-.monitor{background:#000;border:1px solid #334155;border-radius:9px;overflow:hidden;aspect-ratio:16/9}
-canvas{width:100%;height:100%;display:block}
-.controls{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:7px}
-input,textarea,select{width:100%;background:#020617;color:#fff;border:1px solid #334155;border-radius:7px;padding:9px;font-size:12px;outline:none}
-textarea{min-height:110px;resize:vertical}
-button{border:0;border-radius:7px;padding:9px;color:white;font-weight:800;font-size:11px;background:#1d4ed8;cursor:pointer}
-button:disabled{opacity:.4}
-.cyan{background:#0284c7}.greenbtn{background:#15803d}.dark{background:#1e293b}.red{background:#991b1b}
-
-.chat{height:130px;overflow:auto;background:#020617;border:1px solid #334155;border-radius:7px;padding:7px}
-.msg{max-width:90%;padding:6px;margin-bottom:5px;border-radius:6px;font-size:11px;line-height:1.35}
-.msg b{display:block;font-size:8px;margin-bottom:2px}
-.ai{background:#082f49;border-left:2px solid #38bdf8}
-.me{background:#1d4ed8;margin-left:auto}
-
-.stylegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-height:420px;overflow:auto}
-.style{background:#020617;border:2px solid #1e293b;border-radius:8px;overflow:hidden;cursor:pointer;position:relative}
-.style.selected{border-color:#38bdf8;box-shadow:0 0 12px #38bdf833}
-.style img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block}
-.style strong{display:block;padding:5px;font-size:9px}
-.style small{display:block;padding:0 5px 5px;color:#64748b;font-size:7px}
-.num{position:absolute;top:3px;left:3px;background:#000d;padding:2px 4px;border-radius:4px;font-size:7px}
-
-.timeline{display:flex;gap:5px;overflow:auto}
-.clip{min-width:105px;height:60px;background:#020617;border:1px solid #334155;border-radius:6px;padding:6px;cursor:pointer}
-.clip.active{border-color:#38bdf8;background:#082f49}
-.clip b{font-size:9px}.clip span{display:block;color:#94a3b8;font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:4px}
-
-.history{max-height:220px;overflow:auto}
-.historyitem{background:#020617;border:1px solid #1e293b;border-radius:6px;padding:7px;margin-bottom:5px;cursor:pointer}
-.historyitem b{display:block;color:#7dd3fc;font-size:10px}
-.historyitem small{color:#64748b;font-size:8px}
-
-.progress{height:7px;background:#1e293b;border-radius:10px;overflow:hidden;display:none;margin-top:5px}
-.fill{height:100%;width:0;background:linear-gradient(90deg,#38bdf8,#22c55e)}
-.status{text-align:center;color:#7dd3fc;font-size:10px;font-weight:800;padding:6px;min-height:20px}
-.info{font-size:9px;color:#64748b;margin-top:6px}
-.format{display:flex;justify-content:space-between;flex-wrap:wrap;background:#020617;border:1px solid #1e293b;padding:7px;border-radius:6px;margin-top:6px;font-size:9px;color:#94a3b8}
-.format b{color:#7dd3fc}
-
-@media(max-width:850px){.workspace{grid-template-columns:1fr}}
-@media(max-width:480px){.controls{grid-template-columns:1fr 1fr}.stylegrid{grid-template-columns:repeat(2,1fr)}}
+*{box-sizing:border-box}
+body{margin:0;background:#070b12;color:#eef3ff;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+.app{max-width:1200px;margin:auto;padding:14px}
+.top{padding:18px;border:1px solid #26324a;border-radius:16px;background:#0c1320}
+.brand{font-size:23px;font-weight:900;color:#5ec8ff}
+.sub{color:#91a0b8;font-size:12px;margin-top:4px}
+.tabs{display:flex;gap:7px;overflow:auto;margin:12px 0}
+.tab{white-space:nowrap;border:1px solid #26324a;background:#101827;color:#b8c4d8;border-radius:10px;padding:9px 12px;font-weight:800}
+.tab.active{background:#124c70;color:white;border-color:#2ba9e8}
+.panel{display:none}
+.panel.active{display:block}
+.card{background:#0c1320;border:1px solid #26324a;border-radius:14px;padding:14px;margin-bottom:12px}
+.title{font-size:15px;font-weight:900;margin-bottom:10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.field{flex:1;min-width:180px}
+label{display:block;font-size:11px;color:#94a3b8;margin:7px 0 5px}
+input,textarea,select{width:100%;background:#070d17;color:#fff;border:1px solid #334155;border-radius:9px;padding:10px;font:inherit}
+textarea{min-height:150px;resize:vertical}
+button{border:0;border-radius:9px;padding:10px 13px;background:#1687c4;color:#fff;font-weight:900;cursor:pointer}
+button.alt{background:#1a2434}
+button.green{background:#087f58}
+button.red{background:#8e2934}
+.status{padding:10px;border-radius:9px;background:#071b29;color:#8edbff;font-size:12px;margin-top:10px}
+.stylegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(115px,1fr));gap:8px}
+.style{border:1px solid #26324a;border-radius:9px;padding:9px;background:#0a111d;cursor:pointer}
+.style.sel{border-color:#39bdf8;box-shadow:0 0 0 1px #39bdf8 inset}
+.preview{height:70px;border-radius:7px;background:linear-gradient(135deg,#192b42,#3c1d4e);display:grid;place-items:center;font-size:25px;margin-bottom:6px}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:10px}
+.thumb{background:#07101c;border:1px solid #26324a;border-radius:8px;padding:5px}
+.thumb img{width:100%;height:110px;object-fit:cover;border-radius:5px}
+.thumb small{display:block;color:#94a3b8;padding:4px}
+.script{white-space:pre-wrap;background:#050a11;border:1px solid #26324a;border-radius:9px;padding:12px;min-height:180px;line-height:1.6}
+.timeline{display:grid;gap:7px}
+.scene{padding:10px;border:1px solid #26324a;border-radius:9px;background:#09111d}
+.scene b{color:#62caff}
+.progress{height:8px;background:#182335;border-radius:99px;overflow:hidden;margin-top:10px}
+.bar{height:100%;width:0;background:#35baf5;transition:.2s}
+.hint{font-size:11px;color:#8290a5;line-height:1.5}
+.sticky{position:sticky;bottom:8px;z-index:3;background:#0c1320dd;backdrop-filter:blur(8px);padding:9px;border:1px solid #26324a;border-radius:12px;margin-top:12px}
 </style>
 </head>
 
 <body>
-
 <div class="app">
 
-<header>
-<div class="brand">
-🎬 JARVIS Universal Animation Studio
-<small>Story → AI Scenes → Images → Audio → Timeline → Video</small>
-</div>
-<div class="badges">
-<span class="badge blue">🔵 Gemini Director</span>
-<span class="badge green">🟢 History Vault</span>
-<span class="badge gray">🎬 Video + Audio</span>
-</div>
+<header class="top">
+<div class="brand">⚡ JARVIS UNIVERSAL ANIMATION STUDIO</div>
+<div class="sub">Manga Explain Pro • Script First / Audio First • Gemini-ready • 16:9</div>
 </header>
 
-<div class="workspace">
+<nav class="tabs" id="tabs"></nav>
 
-<section class="left">
+<section id="story" class="panel active">
+<div class="card">
+<div class="title">📖 STEP 1 — Story / Manga Chapter</div>
 
-<!-- PREVIEW -->
-<div class="panel">
-<div class="title">🎥 Preview Monitor <span id="sceneNo">Ready</span></div>
-<div class="monitor">
-<canvas id="canvas" width="1920" height="1080"></canvas>
+<label>Manga / Manhwa Chapter URL</label>
+<input id="chapterUrl" value="https://toonily.com/serie/she-is-working-out-7762af4f/chapter-4/">
+
+<div class="row" style="margin-top:9px">
+<button id="analyzeUrl">🔎 Analyze Chapter</button>
+<button class="alt" id="copyUrl">Copy URL</button>
 </div>
 
-<div class="controls">
-<button class="dark" onclick="previousScene()">◀ Previous</button>
-<button class="cyan" onclick="previewMovie()">▶ Preview</button>
-<button class="dark" onclick="nextScene()">Next ▶</button>
-</div>
+<div class="status" id="urlStatus">
+URL reference ready. Panel analysis ke liye apne/authorized panels upload karein.
 </div>
 
-<!-- STORY -->
-<div class="panel">
-<div class="title">📝 Master Story / Script <span id="words">0 words</span></div>
+<label>Apni story/script (optional)</label>
+<textarea id="storyText" placeholder="Yahan apni story ya manga explanation instructions likhen..."></textarea>
 
-<textarea id="story"
-placeholder="Apni complete story, narration ya script yahan paste karein..."></textarea>
-
-<div class="controls">
-
-<select id="ratio" onchange="changeFormat()">
-<option value="16:9">🖥️ 16:9 — YouTube Long</option>
-<option value="9:16">📱 9:16 — Shorts / Reels</option>
-<option value="1:1">⬛ 1:1 — Square</option>
-<option value="4:5">📲 4:5 — Instagram</option>
-<option value="4:3">📺 4:3 — Classic</option>
-<option value="21:9">🎞️ 21:9 — Cinematic</option>
-<option value="2:1">🎬 2:1 — Cinematic</option>
-</select>
-
-<select id="resolution">
-<option value="1920x1080">1920×1080 — Full HD</option>
-<option value="1280x720">1280×720 — HD</option>
-<option value="2560x1440">2560×1440 — 2K</option>
-<option value="3840x2160">3840×2160 — 4K</option>
-</select>
-
-<select id="duration">
-<option value="1">1 Minute</option>
-<option value="3" selected>3 Minutes</option>
-<option value="5">5 Minutes</option>
-<option value="10">10 Minutes</option>
-</select>
-
+<div class="row" style="margin-top:9px">
+<button id="makeScript">🧠 Generate Full Hindi Explain Script</button>
+<button class="alt" id="copyScript">📋 Copy Script</button>
 </div>
 
-<div class="controls">
-
-<select id="sceneTime">
-<option value="5">5 sec / Scene</option>
-<option value="8" selected>8 sec / Scene</option>
-<option value="10">10 sec / Scene</option>
-<option value="12">12 sec / Scene</option>
-</select>
-
-<button class="cyan" id="generate" onclick="generateProject()">🧠 Generate Scenes</button>
-
-<button class="dark" onclick="changeFormat()">⚙️ Apply Format</button>
-
-</div>
-
-<div class="format">
-<span>Ratio: <b id="ratioText">16:9</b></span>
-<span>Size: <b id="sizeText">1920×1080</b></span>
-<span>Use: <b id="useText">YouTube Long</b></span>
+<div id="scriptOut" class="script" style="margin-top:10px">
+Script yahan aayega.
 </div>
 </div>
-
-<!-- AUDIO -->
-<div class="panel">
-<div class="title">🎙️ Audio Track</div>
-
-<input type="file" id="audioFile" accept="audio/*">
-
-<div class="controls">
-<select id="audioMode">
-<option value="loop">🔁 Loop Audio</option>
-<option value="once">▶ Play Once</option>
-</select>
-
-<button class="cyan" onclick="playAudio()">▶ Play Audio</button>
-<button class="dark" onclick="stopAudio()">■ Stop</button>
-</div>
-
-<div id="audioInfo" class="info">
-MP3 / WAV / M4A upload karein. Export ke time audio video ke saath include hoga.
-</div>
-</div>
-
-<!-- TIMELINE -->
-<div class="panel">
-<div class="title">🎞️ Timeline <span id="timelineInfo">0 Scenes</span></div>
-<div class="timeline" id="timeline"></div>
-</div>
-
-<!-- INSPECTOR -->
-<div class="panel">
-<div class="title">🎬 Scene Inspector</div>
-
-<input id="scenePrompt" placeholder="Scene visual prompt">
-
-<textarea id="sceneSub"
-placeholder="Hindi dialogue / subtitle"></textarea>
-
-<div class="controls">
-<button class="cyan" onclick="updateScene()">💾 Update</button>
-<button class="dark" onclick="regenerate()">🔄 Regenerate</button>
-<button class="greenbtn" onclick="exportVideo()">🚀 Export Video</button>
-</div>
-</div>
-
 </section>
 
-<!-- RIGHT -->
-<aside class="right">
-
-<!-- AI -->
-<div class="panel">
-<div class="title">🤖 AI Director</div>
-
-<div class="chat" id="chat">
-<div class="msg ai">
-<b>JARVIS</b>
-Boss! Story dijiye. Main cinematic scenes generate karunga.
+<section id="style" class="panel">
+<div class="card">
+<div class="title">🎨 STEP 2 — Visual Style</div>
+<div class="stylegrid" id="styles"></div>
 </div>
-</div>
+</section>
 
-<div class="controls">
-<input id="aiInput" placeholder="AI ko instruction dein..."
-onkeydown="if(event.key==='Enter')askAI()">
-<button class="cyan" onclick="askAI()">Send</button>
-</div>
-</div>
+<section id="voice" class="panel">
+<div class="card">
+<div class="title">🎙️ STEP 3 — Voice Studio</div>
 
-<!-- 42 STYLES -->
-<div class="panel">
-<div class="title">🎨 42 Visual Styles <span id="selectedStyle">Manhwa</span></div>
-<div class="stylegrid" id="styleGrid"></div>
-</div>
+<div class="grid">
 
-<!-- API -->
-<div class="panel">
-<div class="title">🔑 Gemini API Key</div>
-
-<input id="apiKey" type="password"
-placeholder="Apni Gemini API key paste karein">
-
-<div class="info">
-API key code mein hard-code nahi hai.
-</div>
+<div>
+<label>Language</label>
+<select id="lang">
+<option value="hi-IN">Hindi</option>
+<option value="en-US">English</option>
+<option value="ja-JP">Japanese</option>
+<option value="ko-KR">Korean</option>
+<option value="zh-CN">Chinese</option>
+<option value="es-ES">Spanish</option>
+<option value="fr-FR">French</option>
+<option value="de-DE">German</option>
+</select>
 </div>
 
-<!-- HISTORY -->
-<div class="panel">
-<div class="title">
-📚 History Vault
-<button class="red" onclick="clearHistory()">Clear</button>
+<div>
+<label>Voice</label>
+<select id="voice">
+<option>Zephyr</option>
+<option>Puck</option>
+<option>Charon</option>
+<option>Kore</option>
+<option>Fenrir</option>
+<option>Leda</option>
+<option>Orus</option>
+<option>Aoede</option>
+<option>Callirrhoe</option>
+<option>Autonoe</option>
+<option>Enceladus</option>
+<option>Iapetus</option>
+<option>Umbriel</option>
+<option>Algieba</option>
+<option>Despina</option>
+<option>Erinome</option>
+<option>Algenib</option>
+<option>Rasalgethi</option>
+<option>Laomedeia</option>
+<option>Achernar</option>
+<option>Alnilam</option>
+<option>Schedar</option>
+<option>Gacrux</option>
+<option>Pulcherrima</option>
+<option>Achird</option>
+<option>Zubenelgenubi</option>
+<option>Vindemiatrix</option>
+<option>Sadachbia</option>
+<option>Sadaltager</option>
+<option>Sulafat</option>
+</select>
 </div>
 
-<div class="history" id="history"></div>
+<div>
+<label>Style / Tone</label>
+<select id="voiceStyle">
+<option>Deep cinematic Hindi male narrator</option>
+<option>Emotional storyteller</option>
+<option>Powerful action narrator</option>
+<option>Low calm suspense</option>
+<option>Romantic soft</option>
+</select>
 </div>
 
-</aside>
+</div>
+
+<label>
+<input id="lock" type="checkbox" checked style="width:auto">
+🔒 Voice Lock — same narrator throughout movie
+</label>
+
+<div class="row">
+<button id="previewVoice">▶ Preview</button>
+<button id="geminiTts">🎙️ Generate Gemini TTS</button>
+<button class="alt" id="openTts">📱 External TTS App</button>
+</div>
+
+<audio id="audio" controls style="width:100%;display:none;margin-top:10px"></audio>
+
+<div class="status" id="voiceStatus">
+Gemini TTS ke liye backend API required hai. Browser preview free fallback hai.
+</div>
+</div>
+</section>
+
+<section id="media" class="panel">
+<div class="card">
+<div class="title">📚 STEP 4 — Manga / Manhwa Panels</div>
+
+<input id="panels" type="file" accept="image/*" multiple>
+
+<div class="hint">
+Panels ko chapter order mein select karein.
+Ye app uploaded images ko panel board mein arrange karega.
+</div>
+
+<div id="thumbs" class="thumbs"></div>
+
+<div class="row" style="margin-top:9px">
+<button id="clearPanels" class="red">Clear Panels</button>
+</div>
+</div>
+</section>
+
+<section id="images" class="panel">
+<div class="card">
+
+<div class="title">🖼️ STEP 5 — Image Engine</div>
+
+<div class="grid">
+
+<div>
+<label>Aspect Ratio</label>
+<select id="ratio">
+<option>16:9</option>
+<option>9:16</option>
+<option>1:1</option>
+</select>
+</div>
+
+<div>
+<label>Image Mode</label>
+<select id="imageMode">
+<option>Original Manga Panels</option>
+<option>Panel + AI Motion</option>
+<option>AI Recreation</option>
+<option>Cinematic AI</option>
+</select>
+</div>
+
+<div>
+<label>Panel Motion</label>
+<select id="motion">
+<option>Slow Zoom + Pan</option>
+<option>Dynamic Camera</option>
+<option>Ken Burns</option>
+<option>Minimal</option>
+</select>
+</div>
 
 </div>
 
-<div class="panel">
-<div class="progress" id="progress">
-<div class="fill" id="fill"></div>
+<p class="hint">
+Final video mein original/authorized panels ko timing,
+zoom, pan aur transitions ke saath use kiya ja sakta hai.
+</p>
+
 </div>
-<div class="status" id="status">
-Studio Ready
+</section>
+
+<section id="audio" class="panel">
+<div class="card">
+
+<div class="title">🎵 STEP 6 — Audio</div>
+
+<div class="grid">
+
+<div>
+<label>Audio Mode</label>
+<select id="audioMode">
+<option>Script First</option>
+<option>Audio First</option>
+</select>
 </div>
-<div id="download"></div>
+
+<div>
+<label>Priority</label>
+<select id="priority">
+<option>MAX</option>
+<option>HIGH</option>
+<option>NORMAL</option>
+</select>
+</div>
+
+<div>
+<label>BGM</label>
+<select>
+<option>Slow Piano Cinematic</option>
+<option>Suspense Ambient</option>
+<option>Emotional Strings</option>
+<option>None</option>
+</select>
+</div>
+
+</div>
+
+<label>Existing MP3/WAV</label>
+<input id="audioFile" type="file" accept="audio/*">
+
+<audio id="uploadedAudio" controls style="width:100%;display:none;margin-top:8px"></audio>
+
+</div>
+</section>
+
+<section id="timeline" class="panel">
+<div class="card">
+
+<div class="title">🎬 STEP 7 — Timeline</div>
+
+<div class="row">
+<button id="buildTimeline">Build Panel Timeline</button>
+<button class="alt" id="saveProject">Save Project</button>
+<button class="alt" id="loadProject">Load Project</button>
+<input id="projectFile" type="file" accept="application/json" style="display:none">
+</div>
+
+<div class="progress">
+<div id="bar" class="bar"></div>
+</div>
+
+<div id="timelineOut" class="timeline" style="margin-top:10px"></div>
+
+</div>
+</section>
+
+<section id="export" class="panel">
+<div class="card">
+
+<div class="title">🚀 STEP 8 — Export</div>
+
+<div class="grid">
+
+<div>
+<label>Resolution</label>
+<select id="res">
+<option>1080p</option>
+<option>1440p</option>
+<option>4K</option>
+</select>
+</div>
+
+<div>
+<label>Part Length</label>
+<select id="part">
+<option>10 minutes</option>
+<option>15 minutes</option>
+<option>30 minutes</option>
+<option>60 minutes</option>
+</select>
+</div>
+
+<div>
+<label>Format</label>
+<select>
+<option>MP4</option>
+<option>WebM</option>
+</select>
+</div>
+
+</div>
+
+<button id="render" class="green" style="margin-top:10px">
+🎞️ Prepare Final Video
+</button>
+
+<div id="exportStatus" class="status">
+Browser-only frontend ready.
+</div>
+
+</div>
+</section>
+
+<div class="sticky">
+<div class="row">
+<button id="prev" class="alt">← Previous</button>
+<button id="next">Next →</button>
+</div>
 </div>
 
 </div>
 
 <script>
 
-/* =========================
-   BASIC VARIABLES
-========================= */
-
-const canvas=document.getElementById("canvas");
-const ctx=canvas.getContext("2d");
-
-let scenes=[];
-let current=0;
-let selectedStyle=0;
-let previewTimer=null;
-let audio=null;
-let audioURL=null;
-let audioContext=null;
-let audioSource=null;
-
 const $=id=>document.getElementById(id);
 
+const API_BASE=localStorage.getItem("JARVIS_API_BASE")||"";
 
-/* =========================
-   42 VISUAL STYLES
-========================= */
-
-const styles=[
-
-["MANHWA STYLE","Korean Webtoon",
-"Korean webtoon manhwa masterpiece, detailed eyes, polished digital art, cinematic lighting"],
-
-["MANGA STYLE","Japanese Manga",
-"Japanese manga illustration, detailed ink linework, expressive eyes, dramatic composition"],
-
-["MANGA B&W","Black & White",
-"Japanese black and white manga, monochrome ink, dramatic shadows, hand drawn"],
-
-["ANIME STYLE","TV Anime",
-"high quality TV anime style, vibrant colors, cinematic anime lighting"],
-
-["CHIBI STYLE","Super Deformed",
-"cute chibi anime, super deformed characters, expressive face, polished illustration"],
-
-["ROMANTIC ILLUSTRATION","Novel Style",
-"romantic novel illustration, emotional adult couple, elegant cinematic lighting"],
-
-["FANTASY / XIANXIA","Cultivation",
-"Chinese xianxia cultivation fantasy, immortal warriors, spiritual energy, epic lighting"],
-
-["FANTASY LANDSCAPE","Epic Game",
-"epic fantasy landscape, giant mountains, ancient ruins, dramatic sky"],
-
-["CINEMATIC STYLE","Movie Look",
-"cinematic movie still, dramatic lighting, depth of field, premium movie color grading"],
-
-["REALISTIC PHOTO","Real Life",
-"ultra realistic photography, realistic skin, professional camera, cinematic portrait"],
-
-["GAME ART STYLE","RPG / Gacha",
-"high end RPG game art, anime character rendering, detailed costume, fantasy effects"],
-
-["3D CARTOON STYLE","Pixar-like",
-"high quality 3D cartoon animation, appealing characters, soft lighting"],
-
-["2D CARTOON STYLE","Cartoon",
-"clean 2D cartoon illustration, bold shapes, colorful background"],
-
-["FLAT ILLUSTRATION","Vector",
-"modern flat vector illustration, clean geometric shapes, professional design"],
-
-["MINIMALIST STYLE","Clean",
-"minimalist illustration, simple shapes, clean composition, elegant design"],
-
-["WATERCOLOR STYLE","Painting",
-"beautiful watercolor painting, soft paper texture, artistic brushwork"],
-
-["OIL PAINTING STYLE","Classic Art",
-"classical oil painting, rich brush texture, realistic light"],
-
-["PENCIL SKETCH STYLE","Hand Drawn",
-"detailed graphite pencil sketch, hand drawn, fine shading"],
-
-["CHARCOAL STYLE","Dramatic B&W",
-"dramatic charcoal drawing, monochrome, rough expressive strokes"],
-
-["CYBERPUNK STYLE","Neon Sci-Fi",
-"cyberpunk city, neon lights, futuristic clothing, rain, cinematic lighting"],
-
-["VOXEL ART STYLE","Block World",
-"voxel art, blocky 3D world, colorful cubic environment"],
-
-["3D CUTE STYLE","Toy Like",
-"adorable 3D toy-like characters, rounded forms, studio lighting"],
-
-["COMIC BOOK STYLE","American Comics",
-"American comic book art, bold ink outlines, dynamic action pose"],
-
-["WILDLIFE PHOTOGRAPHY","Animals",
-"professional wildlife photography, realistic animal anatomy, natural habitat"],
-
-["FOOD PHOTOGRAPHY","Food",
-"professional food photography, appetizing detail, studio lighting"],
-
-["INTERIOR DESIGN","Architecture",
-"luxury interior photography, realistic architecture, natural window light"],
-
-["PRODUCT PHOTOGRAPHY","E-Commerce",
-"professional product photography, clean studio background, commercial lighting"],
-
-["NIGHT SCENE STYLE","Moody",
-"moody cinematic night scene, moonlight, fog, deep shadows"],
-
-["MACRO PHOTOGRAPHY","Close Up",
-"extreme macro photography, microscopic detail, sharp focus, soft bokeh"],
-
-["SCI-FI SPACE STYLE","Universe",
-"epic science fiction space, astronauts, planets, nebula, cinematic lighting"],
-
-["UNDERWATER STYLE","Marine",
-"cinematic underwater photography, marine life, volumetric sun rays"],
-
-["HORROR STYLE","Dark",
-"dark horror cinematic scene, eerie atmosphere, fog, suspense"],
-
-["ISOMETRIC STYLE","Game Design",
-"isometric 3D illustration, miniature world, clean geometry"],
-
-["LINE ART STYLE","Black & White",
-"architectural black and white line art, precise pen drawing"],
-
-["SURREAL ART STYLE","Imagination",
-"surreal dreamlike artwork, impossible architecture, imaginative symbolism"],
-
-["DOCUMENTARY STYLE","Real Location",
-"documentary photography, authentic location, natural light, cinematic framing"],
-
-["INFOGRAPHIC STYLE","Educational",
-"professional educational infographic, clean modern visual explanation"],
-
-["INK ART STYLE","Traditional",
-"traditional ink wash illustration, expressive brush strokes, Asian art"],
-
-["STAINED GLASS STYLE","Artistic",
-"beautiful stained glass artwork, luminous colored glass, intricate details"],
-
-["PAPER CUT STYLE","Craft",
-"layered paper cut art, handcrafted paper texture, dimensional layers"],
-
-["ABSTRACT STYLE","Modern",
-"modern abstract digital art, bold shapes, creative premium composition"],
-
-["STEAMPUNK STYLE","Vintage Sci-Fi",
-"steampunk Victorian sci-fi, brass machinery, gears, airship, warm lighting"]
-
+const tabNames=[
+["story","📖 Story"],
+["style","🎨 Style"],
+["voice","🎙️ Voice"],
+["media","📚 Media"],
+["images","🖼️ Images"],
+["audio","🎵 Audio"],
+["timeline","🎬 Timeline"],
+["export","🚀 Export"]
 ];
 
+let idx=0;
+let panels=[];
+let scenes=[];
 
-/* =========================
-   STYLE GRID
-========================= */
+$("tabs").innerHTML=tabNames.map((x,i)=>
+`<button class="tab ${i?"":"active"}" data-i="${i}">${x[1]}</button>`
+).join("");
 
-function loadStyles(){
+function show(i){
 
-const box=$("styleGrid");
-box.innerHTML="";
+idx=Math.max(0,Math.min(tabNames.length-1,i));
 
-styles.forEach((s,i)=>{
+document.querySelectorAll(".panel")
+.forEach((p,j)=>p.classList.toggle("active",j===idx));
 
-const div=document.createElement("div");
+document.querySelectorAll(".tab")
+.forEach((b,j)=>b.classList.toggle("active",j===idx));
 
-div.className="style"+(i===0?" selected":"");
+scrollTo({top:0,behavior:"smooth"});
+}
 
-div.innerHTML=`
-<div class="num">${i+1}</div>
-<img loading="lazy"
-src="https://image.pollinations.ai/prompt/${encodeURIComponent(s[2]+" example")}?width=320&height=200&nologo=true&seed=${100+i}">
-<strong>${s[0]}</strong>
-<small>${s[1]}</small>
-`;
+document.querySelectorAll(".tab")
+.forEach(b=>b.onclick=()=>show(+b.dataset.i));
 
-div.onclick=()=>{
-selectedStyle=i;
+$("prev").onclick=()=>show(idx-1);
+$("next").onclick=()=>show(idx+1);
 
+const styles=[
+"Manhwa","Manga","Manga B&W","Anime","Chibi",
+"Romantic","Xianxia","Fantasy","Cinematic",
+"Realistic Photo","Game Art","3D Cartoon",
+"2D Cartoon","Flat Illustration","Minimalist",
+"Watercolor","Oil Painting","Pencil Sketch",
+"Charcoal","Cyberpunk","Voxel","3D Cute",
+"Comic Book","Wildlife","Food","Interior",
+"Product","Night Scene","Macro","Sci-Fi Space",
+"Underwater","Horror","Isometric","Line Art",
+"Surreal","Documentary","Infographic","Ink Art",
+"Stained Glass","Paper Cut","Abstract","Steampunk"
+];
+
+$("styles").innerHTML=styles.map((s,i)=>
+`<div class="style ${i===0?"sel":""}" data-style="${s}">
+<div class="preview">🎭</div>
+<b>${i+1}. ${s}</b>
+</div>`
+).join("");
+
+document.querySelectorAll(".style").forEach(x=>
+x.onclick=()=>{
 document.querySelectorAll(".style")
-.forEach((x,n)=>x.classList.toggle("selected",n===i));
+.forEach(y=>y.classList.remove("sel"));
+x.classList.add("sel");
+});
 
-$("selectedStyle").textContent=s[0];
-
-$("status").textContent="Selected Style: "+s[0];
+$("analyzeUrl").onclick=()=>{
+$("urlStatus").textContent=
+"Chapter URL saved. Ab actual panel analysis ke liye Media tab mein authorized panel images upload karein.";
+show(3);
 };
 
-box.appendChild(div);
-
-});
-
-}
-
-
-/* =========================
-   FORMAT SYSTEM
-========================= */
-
-const formats={
-
-"16:9":[1920,1080,"YouTube Long"],
-
-"9:16":[1080,1920,"YouTube Shorts / Reels"],
-
-"1:1":[1080,1080,"Square Social"],
-
-"4:5":[1080,1350,"Instagram Feed"],
-
-"4:3":[1440,1080,"Classic Video"],
-
-"21:9":[2560,1080,"Cinematic Wide"],
-
-"2:1":[1920,960,"Cinematic"]
-
+$("copyUrl").onclick=async()=>{
+await navigator.clipboard.writeText($("chapterUrl").value);
+$("urlStatus").textContent="URL copied.";
 };
 
-function changeFormat(){
+function fallbackScript(){
 
-const ratio=$("ratio").value;
-const f=formats[ratio];
+let story=$("storyText").value.trim();
 
-canvas.width=f[0];
-canvas.height=f[1];
+if(!story)
+story=
+"Is chapter ke uploaded panels ko order mein explain karo. Har panel ke visual action, character emotion, important event aur scene transition ko natural Hindi narration mein describe karo.";
 
-$("ratioText").textContent=ratio;
-$("sizeText").textContent=f[0]+"×"+f[1];
-$("useText").textContent=f[2];
+let lines=panels.length
+?panels.map((p,i)=>
+`Scene ${i+1}: Panel ${i+1} mein dikh rahe visual ko cinematic Hindi narration mein explain kiya jaata hai. Character expressions, action aur story progression par focus rakho.`)
+:[story];
 
-draw(null,"JARVIS Universal Animation Studio");
-
+return "JARVIS MANGA EXPLAIN SCRIPT\n\n"+lines.join("\n\n");
 }
 
+async function api(path,body){
 
-/* =========================
-   DRAW FRAME
-========================= */
+if(!API_BASE)
+throw Error("Backend URL set nahi hai. Browser fallback use karein.");
 
-function draw(img,subtitle="",zoom=0){
-
-const W=canvas.width;
-const H=canvas.height;
-
-ctx.clearRect(0,0,W,H);
-
-ctx.fillStyle="#020617";
-ctx.fillRect(0,0,W,H);
-
-if(img){
-
-const scale=1+(zoom*.06);
-const w=W*scale;
-const h=H*scale;
-
-ctx.drawImage(
-img,
-(W-w)/2,
-(H-h)/2,
-w,
-h
-);
-
-}
-
-if(subtitle){
-
-const barH=Math.max(70,H*.11);
-const y=H-barH;
-
-ctx.fillStyle="rgba(0,0,0,.82)";
-ctx.fillRect(W*.025,y,W*.95,barH);
-
-ctx.fillStyle="#fff";
-ctx.font=`bold ${Math.max(18,W*.018)}px system-ui`;
-ctx.textAlign="center";
-
-wrapText(
-subtitle,
-W/2,
-y+barH/2,
-W*.88,
-Math.max(24,H*.035)
-);
-
-}
-
-}
-
-function wrapText(text,x,y,maxWidth,lineHeight){
-
-const words=String(text).split(/\s+/);
-let line="";
-const lines=[];
-
-words.forEach(word=>{
-
-const test=line?line+" "+word:word;
-
-if(ctx.measureText(test).width>maxWidth&&line){
-
-lines.push(line);
-line=word;
-
-}else line=test;
-
-});
-
-if(line)lines.push(line);
-
-const start=y-(lines.length-1)*lineHeight/2;
-
-lines.forEach((l,i)=>{
-ctx.fillText(l,x,start+i*lineHeight);
-});
-
-}
-
-
-/* =========================
-   GEMINI
-========================= */
-
-function getKey(){
-return $("apiKey").value.trim();
-}
-
-async function gemini(prompt){
-
-const key=getKey();
-
-if(!key)
-throw new Error("API KEY MISSING");
-
-const url=
-"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key="+
-encodeURIComponent(key);
-
-const response=await fetch(url,{
-
+let r=await fetch(API_BASE+path,{
 method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-
-contents:[
-{
-parts:[
-{text:prompt}
-]
-}
-]
-
-})
-
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify(body)
 });
 
-if(!response.ok)
-throw new Error("Gemini Error");
+let j=await r.json();
 
-const data=await response.json();
+if(!r.ok)
+throw Error(j.error||j.message||"API error");
 
-return data.candidates?.[0]?.content?.parts
-?.map(x=>x.text||"").join("")||"";
-
+return j;
 }
 
+$("makeScript").onclick=async()=>{
 
-/* =========================
-   GENERATE PROJECT
-========================= */
+let out=$("scriptOut");
 
-async function generateProject(){
-
-const story=$("story").value.trim();
-
-if(!story){
-
-alert("Pehle story likhiye.");
-return;
-
-}
-
-const minutes=+$("duration").value;
-const sec=+$("sceneTime").value;
-
-const count=Math.ceil(minutes*60/sec);
-
-$("generate").disabled=true;
-
-progress(5,"AI cinematic scenes bana raha hai...");
+out.textContent="Generating...";
 
 try{
 
-const prompt=`
-Create exactly ${count} cinematic scenes for this story.
+let j=await api("/api/manga/script",{
+url:$("chapterUrl").value,
+story:$("storyText").value,
+panels:panels.map(x=>x.data),
+language:$("lang").value,
+style:document.querySelector(".style.sel")?.dataset.style||"Manhwa"
+});
 
-Return ONLY valid JSON.
-
-Format:
-[
-{"prompt":"detailed English visual prompt","sub":"short Hindi dialogue or narration"}
-]
-
-Keep characters visually consistent.
-Use cinematic camera angles.
-Story:
-${story}
-`;
-
-let text=await gemini(prompt);
-
-text=text
-.replace(/```json/gi,"")
-.replace(/```/g,"")
-.trim();
-
-scenes=JSON.parse(text);
-
-scenes=scenes.slice(0,count);
+out.textContent=j.script||j.text||fallbackScript();
 
 }catch(e){
 
-scenes=[];
+out.textContent=
+fallbackScript()+
+"\n\n[Backend connected hone par Gemini panel analysis automatically add hoga.]";
 
-for(let i=0;i<count;i++){
+}
+};
 
-scenes.push({
+$("copyScript").onclick=async()=>{
+await navigator.clipboard.writeText($("scriptOut").textContent);
+$("urlStatus").textContent="Full script copied.";
+};
 
-prompt:`cinematic scene ${i+1}, ${story}`,
+$("panels").onchange=e=>{
 
-sub:`कहानी का दृश्य ${i+1}`
+panels=[];
+
+[...e.target.files].forEach(f=>{
+
+let r=new FileReader();
+
+r.onload=()=>{
+
+panels.push({
+name:f.name,
+data:r.result
+});
+
+panels.sort((a,b)=>
+a.name.localeCompare(b.name,undefined,{numeric:true})
+);
+
+renderPanels();
+
+};
+
+r.readAsDataURL(f);
 
 });
 
+};
+
+function renderPanels(){
+
+$("thumbs").innerHTML=panels.map((p,i)=>
+`<div class="thumb">
+<img src="${p.data}">
+<small>Panel ${i+1}<br>${p.name}</small>
+</div>`
+).join("");
+
 }
 
-addMessage(
-"JARVIS",
-"Gemini unavailable. Fallback scenes create ho gaye.",
-"ai"
+$("clearPanels").onclick=()=>{
+panels=[];
+$("panels").value="";
+renderPanels();
+};
+
+$("previewVoice").onclick=()=>{
+
+if(!("speechSynthesis" in window))
+return alert("Browser voice unavailable");
+
+let u=new SpeechSynthesisUtterance(
+$("scriptOut").textContent.slice(0,1500)||
+"Namaskar, yeh JARVIS cinematic Hindi narration preview hai."
 );
 
-}
+u.lang=$("lang").value;
+u.rate=.9;
+u.pitch=.85;
 
-current=0;
+speechSynthesis.cancel();
+speechSynthesis.speak(u);
 
-renderTimeline();
-showScene(0);
+$("voiceStatus").textContent=
+"Browser voice preview running.";
 
-saveHistory(story);
+};
 
-await generateImages();
+$("geminiTts").onclick=async()=>{
 
-$("generate").disabled=false;
+try{
 
-progress(100,"Scenes ready!");
-
-}
-
-
-/* =========================
-   IMAGE GENERATION
-========================= */
-
-async function generateImages(){
-
-for(let i=0;i<scenes.length;i++){
-
-progress(
-10+(i/scenes.length)*85,
-`Image ${i+1}/${scenes.length} generate ho rahi hai...`
-);
-
-const style=styles[selectedStyle][2];
-
-const finalPrompt=
-style+
-", "+
-scenes[i].prompt+
-", 16:9 cinematic composition, high detail, no text, no watermark";
-
-const url=
-"https://image.pollinations.ai/prompt/"+
-encodeURIComponent(finalPrompt)+
-"?width="+canvas.width+
-"&height="+canvas.height+
-"&seed="+(1000+i*7919)+
-"&nologo=true";
-
-scenes[i].image=await loadImage(url);
-
-if(i===current)
-showScene(i);
-
-}
-
-}
-
-
-/* =========================
-   LOAD IMAGE
-========================= */
-
-function loadImage(url){
-
-return new Promise(resolve=>{
-
-const img=new Image();
-
-img.crossOrigin="anonymous";
-
-img.onload=()=>resolve(img);
-
-img.onerror=()=>resolve(null);
-
-img.src=url;
-
+let j=await api("/api/tts",{
+text:$("scriptOut").textContent,
+language:$("lang").value,
+voice:$("voice").value,
+voiceStyle:$("voiceStyle").value,
+voiceLocked:$("lock").checked
 });
 
+if(j.audioUrl){
+
+$("audio").src=j.audioUrl;
+$("audio").style.display="block";
+
+$("voiceStatus").textContent=
+"Gemini TTS audio ready.";
+
+}else throw Error("No audio returned");
+
+}catch(e){
+
+$("voiceStatus").textContent=
+"Gemini TTS backend connect nahi hai: "+e.message;
+
 }
 
+};
 
-/* =========================
-   TIMELINE
-========================= */
+$("openTts").onclick=()=>
+window.open(
+"https://play.google.com/store/apps/details?id=com.stcodesapp.text2speech",
+"_blank"
+);
 
-function renderTimeline(){
+$("audioFile").onchange=e=>{
 
-const box=$("timeline");
+let f=e.target.files[0];
 
-box.innerHTML="";
+if(f){
 
-scenes.forEach((s,i)=>{
+$("uploadedAudio").src=
+URL.createObjectURL(f);
 
-const div=document.createElement("div");
+$("uploadedAudio").style.display="block";
 
-div.className="clip"+(i===current?" active":"");
+}
 
-div.innerHTML=`
-<b>Scene ${i+1}</b>
-<span>${
+};
+
+$("buildTimeline").onclick=()=>{
+
+let n=Math.max(panels.length,scenes.length,1);
+
+scenes=Array.from({length:n},(_,i)=>({
+scene:i+1,
+panel:i+1,
+duration:6
+}));
+
+$("timelineOut").innerHTML=
+scenes.map(s=>
+`<div class="scene">
+<b>Scene ${s.scene}</b> • Panel ${s.panel} • ${s.duration}s • ${$("motion").value}
+</div>`
+).join("");
+
+$("bar").style.width="100%";
+
+};
+
+$("saveProject").onclick=()=>{
+
+let d={
+url:$("chapterUrl").value,
+story:$("storyText").value,
+script:$("scriptOut").textContent,
+style:document.querySelector(".style.sel")?.dataset.style,
+panels:panels.map(p=>({
+name:p.name,
+data:p.data
+})),
+settings:{
+ratio:$("ratio").value,
+voice:$("voice").value
+}
+};
+
+let a=document.createElement("a");
+
+a.href=URL.createObjectURL(
+new Blob([JSON.stringify(d)],{
+type:"application/json"
+})
+);
+
+a.download="JARVIS-project.json";
+a.click();
+
+};
+
+$("loadProject").onclick=()=>
+$("projectFile").click();
+
+$("projectFile").onchange=async e=>{
+
+let d=JSON.parse(
+await e.target.files[0].text()
+);
+
+$("chapterUrl").value=d.url||"";
+$("storyText").value=d.story||"";
+$("scriptOut").textContent=
+d.script||"Script yahan aayega.";
+
+panels=d.panels||[];
+
+renderPanels();
+
+};
+
+$("render").onclick=()=>{
+
+$("exportStatus").textContent=
+"Timeline prepared. Actual MP4 rendering ke liye backend render/FFmpeg service connect karni hogi.";
+
+};
+
+</script>
+</body>
+</html>
